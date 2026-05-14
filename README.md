@@ -28,15 +28,15 @@ This is a systems-level project focused on understanding how in-memory stores wo
 
 ```
 RushDB/
-├── server/                  # Server binary
-│   └── src/
+├── /                  
+│        src/                # db binary
 │       ├── main.rs          # Entry point
 │       ├── engine.rs        # KvStore — in-memory HashMap
 │       ├── persistence.rs   # Snapshot save/load
 │       ├── server.rs        # TCP listener, request dispatch
 │       └── libr.rs          # Server-side protocol (read request, send response)
 │
-├── client/                  # Client binary
+├── Rushcli/                 # cli binary
 │   └── src/
 │       ├── main.rs          # Entry point
 │       ├── client.rs        # Query abstraction
@@ -47,8 +47,7 @@ RushDB/
 │
 ├── config.toml              # Configuration file
 ├── docker-compose.yml
-├── Dockerfile.server
-├── Dockerfile.client
+├── Dockerfile
 └── README.md
 ```
 
@@ -102,14 +101,14 @@ RushDB/
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourname/RushDB
 cd RushDB
 
 # Start the server
-cargo run -p server
+cargo run
 
 # In another terminal, start the client shell
-cargo run -p client
+cd cli
+cargo run -p rushcli
 ```
 
 ### Run with Docker
@@ -186,7 +185,7 @@ save_dir = "./data"
 Override config path via environment variable:
 
 ```bash
-CONFIG_PATH=/etc/RushDB/config.toml ./server
+CONFIG_PATH=/etc/RushDB/config.toml ./rushdb
 ```
 
 ---
