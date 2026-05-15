@@ -1,9 +1,11 @@
 use crate::{conf::Config, engine::Store};
 use bincode::{self};
-use std::fs;
+use std::{collections::HashMap, fs};
+
 const SAVE_PATH: &str = "./data/snapshot.bin";
 const SAVE_DIR: &str = "./data";
-pub fn save(store: &Store, conf: Option<Config>) -> std::io::Result<()> {
+
+pub fn save(store: &HashMap<String, String>, conf: Option<Config>) -> std::io::Result<()> {
     let bytes = bincode::serialize(store).expect("Failed to serialize");
     let dir = if conf.clone().unwrap().server.save_dir.is_empty() {
         SAVE_DIR.to_string()
@@ -26,8 +28,13 @@ pub fn save(store: &Store, conf: Option<Config>) -> std::io::Result<()> {
     }
 }
 
-pub fn load() -> Store {
-    match fs::read(SAVE_PATH) {
+pub fn load(conf: Option<Config>) -> Store {
+    let path = if conf.clone().unwrap().server.save_path.is_empty() {
+        SAVE_PATH.to_string()
+    } else {
+        conf.unwrap().server.save_path
+    };
+    match fs::read(path) {
         Ok(bytes) => bincode::deserialize(&bytes).expect("Failed to deserialize"),
         Err(_) => Store::new(),
     }
