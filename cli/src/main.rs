@@ -1,6 +1,5 @@
 mod client;
 mod cmd;
-mod libc;
 mod shell;
 mod util;
 

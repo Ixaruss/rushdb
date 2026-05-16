@@ -1,4 +1,5 @@
-use crate::libc::{ReqType, recv_response, send_request};
+use common::io::{recv_response, send_request};
+use common::serevrtypes::ReqType;
 use tokio::net::TcpStream;
 
 pub async fn query(

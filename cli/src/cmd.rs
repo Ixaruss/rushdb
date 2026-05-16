@@ -1,5 +1,6 @@
-use crate::{client::query, libc::ReqType, shell};
+use crate::{client::query, shell};
 use clap::{Parser, Subcommand};
+use common::serevrtypes::ReqType;
 use tokio::net::TcpStream;
 
 #[derive(Parser)]
