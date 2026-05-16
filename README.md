@@ -182,3 +182,7 @@ docker cp /path/to/config rushdb:/etc/
 | `v0.4.0` | Shared `protocol` crate, workspace restructure |
 
 ---
+
+## Author
+
+Built in a day. Bugs fixed the same day.
