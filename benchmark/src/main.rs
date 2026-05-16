@@ -1,7 +1,7 @@
 /*
  *  This file is written by ai.
  *  With sole purpose in mind to produce similarly formatted output,
- *  as the redis benchmark program handy graph generation.
+ *  as the redis benchmark program for handy graph generation.
  */
 
 use std::sync::Arc;
