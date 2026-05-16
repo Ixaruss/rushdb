@@ -1,5 +1,4 @@
 # RushDB
-
 > A fast, lightweight, persistent in-memory key-value store with a TCP server, binary protocol, and interactive CLI — version `0.1.0`
 
 ---
@@ -21,6 +20,36 @@ This is a systems-level project focused on understanding how in-memory stores wo
 - 🖥️ **Interactive REPL** with tab completion and command hinting
 - 🧰 **CLI interface** via `clap` for one-shot commands
 - 🐳 **Docker support** — server and client as separate containers
+
+---
+
+## Benchmarks
+
+Benchmarked against Redis on the same machine using 1,000,000 requests, 200 concurrent clients, and 64-byte payloads. RushDB uses `RwLock` for concurrent reads — multiple GET operations run fully in parallel, which is the key architectural difference vs Redis's single-threaded execution model.
+
+**Machine:** AMD Ryzen 5 5600H, 6 cores / 12 threads
+
+### Throughput
+
+<img width="1600" height="889" alt="Image" src="https://github.com/user-attachments/assets/5645f669-1484-49f3-a1cb-8385d62bc855" />
+
+| | RushDB | Redis (single thread) | Redis (multi threaded) |
+|---|---|---|---|
+| SET | 136,934 ops/s | 97,373 ops/s | 158,035 ops/s |
+| GET | **365,433 ops/s** | 97,442 ops/s | 168,548 ops/s |
+
+### Latency
+
+<img width="1600" height="800" alt="Image" src="https://github.com/user-attachments/assets/921a1f80-d1f0-43ce-9f59-075f8349e7a0" />
+
+| | RushDB | Redis (single thread) | Redis (multi threaded) |
+|---|---|---|---|
+| p50 | **0.029ms** | 1.031ms | 1.151ms |
+| p95 | **0.110ms** | 1.119ms | 1.431ms |
+| p99 | **0.823ms** | 1.247ms | 2.439ms |
+| max | **1.489ms** | 4.783ms | 8.087ms |
+
+> Benchmarks run with snapshot persistence disabled. See `bench/` for the benchmark binary and full methodology.
 
 ---
 
@@ -91,6 +120,7 @@ docker run -p 6080:6080 --name=rushdb -d rushdb:0.1
 ---
 
 ### Benchmarking
+
 ```bash
 cargo build -p Benchmark
 benchmark
@@ -101,16 +131,15 @@ benchmark
 ```
 
 ---
+
 ## Usage
 
 ### Interactive Shell
 
 ```bash
 cli
-
 # or to build it from source
 cargo run -p cli
-
 # or via docker
 docker exec -it rushdb /bin/bash
 cli
