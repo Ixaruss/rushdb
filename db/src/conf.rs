@@ -17,33 +17,26 @@ pub struct ServerConfig {
 
 impl Config {
     pub fn load(path: Option<String>) -> Self {
-        let default_path: String = String::from("/etc/bcc/conf.toml");
+        let default_path: String = String::from("/etc/conf.toml");
         let p = match path {
             Some(val) => val,
             None => default_path,
         };
-        let res = toml::from_str(match &fs::read_to_string(p) {
-            Ok(val) => val,
-            Err(e) => {
-                println!("cant parse conf file: {}", e);
-                ""
-            }
-        });
-        let config: Config = match res {
-            Ok(c) => c,
-            Err(e) => {
-                println!("error while reading: {}", e);
-                Config {
-                    server: ServerConfig {
-                        host: String::from("0.0.0.0"),
-                        port: 6080,
-                        save_interval: 60,
-                        save_path: String::from("./data/snapshot.bin"),
-                        save_dir: String::from("./data"),
-                    },
-                }
-            }
+        let default_config = || Config {
+            server: ServerConfig {
+                host: String::from("0.0.0.0"),
+                port: 6080,
+                save_interval: 60,
+                save_path: String::from("./data/snapshot.bin"),
+                save_dir: String::from("./data"),
+            },
         };
+
+        let config: Config = match fs::read_to_string(p) {
+            Ok(val) => toml::from_str(&val).unwrap_or_else(|_| default_config()),
+            Err(_) => default_config(),
+        };
+
         println!("loaded config: {:?}", config);
         config
     }
