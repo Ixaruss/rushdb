@@ -24,35 +24,6 @@ This is a systems-level project focused on understanding how in-memory stores wo
 
 ---
 
-## Architecture
-
-```
-RushDB/
-├── /                  
-│        src/                # db binary
-│       ├── main.rs          # Entry point
-│       ├── engine.rs        # KvStore — in-memory HashMap
-│       ├── persistence.rs   # Snapshot save/load
-│       ├── server.rs        # TCP listener, request dispatch
-│       └── libr.rs          # Server-side protocol (read request, send response)
-│
-├── Rushcli/                 # cli binary
-│   └── src/
-│       ├── main.rs          # Entry point
-│       ├── client.rs        # Query abstraction
-│       ├── cmd.rs           # clap CLI + command dispatch
-│       ├── shell.rs         # Interactive REPL
-│       ├── util.rs          # Tab completion, hinting
-│       └── libc.rs          # Client-side protocol (send request, read response)
-│
-├── config.toml              # Configuration file
-├── docker-compose.yml
-├── Dockerfile
-└── README.md
-```
-
----
-
 ## Protocol
 
 `RushDB` uses a custom binary protocol over TCP — not JSON, not HTTP.
@@ -104,67 +75,64 @@ RushDB/
 cd RushDB
 
 # Start the server
-cargo run
+cargo run -p db
 
 # In another terminal, start the client shell
-cd cli
-cargo run -p rushcli
+cargo run -p cli
 ```
 
 ### Run with Docker
 
 ```bash
-docker compose up
+docker build -t rushdb:0.1 .
+docker run -p 6080:6080 --name=rushdb -d rushdb:0.1
 ```
 
 ---
 
+### Benchmarking
+```bash
+cargo build -p Benchmark
+benchmark
+
+# via docker
+docker exec -it rushdb /bin/bash
+benchmark
+```
+
+---
 ## Usage
 
 ### Interactive Shell
 
 ```bash
-rushcli
+cli
 
 # or to build it from source
-cargo run -p rushcli
-```
+cargo run -p cli
 
-```
-Type 'help' for commands or 'exit' to quit.
-version: 0.1.0
-cli> set name Alice
-DONE
-cli> get name
-Alice
-cli> exists name
-true
-cli> total
-1
-cli> del name
-DONE
-cli> get name
-DONT EXISTS
-cli> exit
+# or via docker
+docker exec -it rushdb /bin/bash
+cli
 ```
 
 ### One-shot CLI
 
 ```bash
 # Set a key
-rushcli set name Alice
+cli set name Alice
 
 # Get a key
-rushcli get name
+cli get name
 
 # Check existence
-rushcli exists name
+cli exists name
 
 # Delete
-rushcli del name
+cli del name
 
 # Total keys
-rushcli total
+cli total
 ```
 
 ---
@@ -176,8 +144,8 @@ All server settings are in `config.toml`:
 ```toml
 [server]
 host = "0.0.0.0"
-port = 8080
-save_interval = 10        # seconds between snapshots
+port = 6080
+save_interval = 60        # seconds between snapshots
 save_path = "./data/snapshot.bin"
 save_dir = "./data"
 ```
@@ -186,6 +154,8 @@ Override config path via environment variable:
 
 ```bash
 CONFIG_PATH=/etc/RushDB/config.toml ./rushdb
+# or via docker
+docker cp /path/to/config rushdb:/etc/
 ```
 
 ---
