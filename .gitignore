@@ -4,3 +4,7 @@ test.rs
 x
 tasks.md
 /data
+bres.txt
+/jenkins
+.jenkins/
+.env
